@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 var db *gorm.DB
@@ -30,6 +31,7 @@ func main() {
 
 	router.GET("/", handleIndex)
 	router.GET("/user/:user_id", handleUserPage)
+	router.POST("/purchase/:user_id", handlePurchase)
 
 	router.Run()
 }
@@ -40,10 +42,21 @@ func getAllUsers() []models.User {
 	return allUsers
 }
 
+func getAllDrinks() []models.Drink {
+	var allDrinks []models.Drink
+	db.Find(&allDrinks)
+	return allDrinks
+}
+
 func getPurchasesOfUser(userId uint) []models.Purchase {
 	var purchases []models.Purchase
 	db.Preload("Product").Where("customer_id = ?", userId).Find(&purchases)
 	return purchases
+}
+
+func purchaseDrink(userId uint, drinkId uint) {
+	purchase := models.Purchase{CustomerID: userId, ProductID: drinkId, PurchaseTime: time.Now()}
+	db.Create(&purchase)
 }
 
 func handleIndex(c *gin.Context) {
@@ -64,13 +77,24 @@ func handleIndex(c *gin.Context) {
 func handleUserPage(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	purchases := getPurchasesOfUser(uint(userId))
+	drinks := getAllDrinks()
 
 	c.HTML(
 		http.StatusOK,
 		"user.html",
 		gin.H{
 			"title":     "Users",
+			"userId":    userId,
+			"drinks":    drinks,
 			"purchases": purchases,
 		},
 	)
+}
+
+func handlePurchase(c *gin.Context) {
+	drinkId, _ := strconv.ParseUint(c.PostForm("drink"), 10, 64)
+	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	purchaseDrink(uint(userId), uint(drinkId))
+
+	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }

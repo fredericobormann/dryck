@@ -5,12 +5,15 @@
 
 <h1>Hello Gin!</h1>
 
+<h1>Neues Getränk kaufen</h1>
+{{range .drinks}}
+    <form action="/purchase/{{$.userId}}" method="post">
+        <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">{{.Name}}</button>
+    </form>
+{{end}}
+
 {{range .purchases }}
-    <!--Create the link for the article based on its ID-->
-    <a href="/user/{{.ID}}">
-        <!--Display the title of the article -->
-        <h2>{{.Product.Name}}</h2>
-    </a>
+    <h2>{{.Product.Name}}</h2>
 {{end}}
 
 <!--Embed the footer.html template at this location-->
