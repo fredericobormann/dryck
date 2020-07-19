@@ -2,12 +2,12 @@ package main
 
 import (
 	"dryck/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var db *gorm.DB
@@ -25,22 +25,25 @@ func main() {
 	db.AutoMigrate(&models.Drink{})
 	db.AutoMigrate(&models.Purchase{})
 
-	var users []models.User
-	db.Find(&users)
-	fmt.Println(users)
-
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", handleIndex)
+	router.GET("/user/:user_id", handleUserPage)
 
 	router.Run()
 }
 
-func getAllUsers(db *gorm.DB) []models.User {
+func getAllUsers() []models.User {
 	var allUsers []models.User
 	db.Find(&allUsers)
 	return allUsers
+}
+
+func getPurchasesOfUser(userId uint) []models.Purchase {
+	var purchases []models.Purchase
+	db.Preload("Product").Where("customer_id = ?", userId).Find(&purchases)
+	return purchases
 }
 
 func handleIndex(c *gin.Context) {
@@ -53,7 +56,21 @@ func handleIndex(c *gin.Context) {
 		// Pass the data that the page uses (in this case, 'title')
 		gin.H{
 			"title": "Home Page",
-			"users": getAllUsers(db),
+			"users": getAllUsers(),
+		},
+	)
+}
+
+func handleUserPage(c *gin.Context) {
+	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	purchases := getPurchasesOfUser(uint(userId))
+
+	c.HTML(
+		http.StatusOK,
+		"user.html",
+		gin.H{
+			"title":     "Users",
+			"purchases": purchases,
 		},
 	)
 }

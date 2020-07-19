@@ -8,7 +8,7 @@ import (
 type Purchase struct {
 	gorm.Model
 	Customer     User
-	UserID       uint
+	CustomerID   uint
 	Product      Drink
 	ProductID    uint
 	PurchaseTime time.Time
