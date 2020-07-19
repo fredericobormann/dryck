@@ -17,4 +17,5 @@ func main() {
 
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Drink{})
+	db.AutoMigrate(&models.Purchase{})
 }
