@@ -16,4 +16,5 @@ func main() {
 	defer db.Close()
 
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Drink{})
 }
