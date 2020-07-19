@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dryck/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
@@ -13,4 +14,6 @@ func main() {
 	}
 
 	defer db.Close()
+
+	db.AutoMigrate(&models.User{})
 }
