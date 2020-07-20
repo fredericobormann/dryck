@@ -26,9 +26,7 @@
     {{end}}
 </div>
 
-{{range .purchases }}
-    <h2>{{.Product.Name}}</h2>
-{{end}}
+{{ template "purchase-history.html" .}}
 
 <!--Embed the footer.html template at this location-->
 {{ template "footer.html" .}}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"dryck/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -30,6 +31,7 @@ func main() {
 	router := gin.Default()
 	router.SetFuncMap(template.FuncMap{
 		"formatAsPrice": formatAsPrice,
+		"formatAsTime":  formatAsTime,
 	})
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
@@ -131,5 +133,9 @@ func formatAsPrice(cents int) string {
 	} else {
 		return strconv.FormatInt(int64(cents/100), 10) + ",0" + strconv.FormatInt(int64(cents%100), 10) + "€"
 	}
+}
 
+func formatAsTime(t time.Time) string {
+	year, month, day := t.Date()
+	return fmt.Sprintf("%02d.%02d.%d", day, month, year)
 }

@@ -1,0 +1,30 @@
+<table>
+    <thead>
+        <tr>
+            <th>
+                Datum
+            </th>
+            <th>
+                Getränk
+            </th>
+            <th>
+                Preis
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .purchases}}
+            <tr>
+                <td>
+                    {{.PurchaseTime | formatAsTime}}
+                </td>
+                <td>
+                    {{.Product.Name}}
+                </td>
+                <td>
+                    {{.Product.Price | formatAsPrice}}
+                </td>
+            </tr>
+        {{end}}
+    </tbody>
+</table>
