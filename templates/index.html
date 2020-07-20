@@ -3,15 +3,22 @@
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
 
-<h1>Hello Gin!</h1>
+<h1>Welcome, welcome!</h1>
 
-{{range .users }}
-    <!--Create the link for the article based on its ID-->
-    <a href="/user/{{.ID}}">
-        <!--Display the title of the article -->
-        <h2>{{.Name}}</h2>
-    </a>
-{{end}}
+<div class="row">
+    {{range .users }}
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">{{.Name}}</span>
+                </div>
+                <div class="card-action">
+                    <a href="/user/{{.ID}}">Getränke buchen</a>
+                </div>
+            </div>
+        </div>
+    {{end}}
+</div>
 
 <!--Embed the footer.html template at this location-->
 {{ template "footer.html" .}}

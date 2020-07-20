@@ -27,6 +27,7 @@ func main() {
 	db.AutoMigrate(&models.Purchase{})
 
 	router := gin.Default()
+	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", handleIndex)
