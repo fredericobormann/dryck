@@ -5,6 +5,9 @@
 
 <h2>Hallo {{.username}}!</h2>
 
+<h4>Aktueller Gesamtbetrag: {{.totalDebt | formatAsPrice}}</h4>
+
+<div class="divider"></div>
 <h4>Neues Getränk kaufen</h4>
 <div class="row">
     {{range .drinks}}

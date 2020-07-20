@@ -73,6 +73,12 @@ func getPurchasesOfUser(userId uint) []models.Purchase {
 	return purchases
 }
 
+func getTotalDebtOfUser(userId uint) int {
+	var totalDebt int
+	db.Table("purchases").Where("customer_id = ?", userId).Joins("inner join drinks on purchases.product_id = drinks.id").Select("sum(drinks.price)").Row().Scan(&totalDebt)
+	return totalDebt
+}
+
 func purchaseDrink(userId uint, drinkId uint) {
 	purchase := models.Purchase{CustomerID: userId, ProductID: drinkId, PurchaseTime: time.Now()}
 	db.Create(&purchase)
@@ -103,6 +109,7 @@ func handleNewUser(c *gin.Context) {
 func handleUserPage(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	username := getUsername(uint(userId))
+	totalDebt := getTotalDebtOfUser(uint(userId))
 	purchases := getPurchasesOfUser(uint(userId))
 	drinks := getAllDrinks()
 
@@ -113,6 +120,7 @@ func handleUserPage(c *gin.Context) {
 			"title":     username,
 			"username":  username,
 			"userId":    userId,
+			"totalDebt": totalDebt,
 			"drinks":    drinks,
 			"purchases": purchases,
 		},
