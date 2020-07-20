@@ -11,9 +11,10 @@
         <div class="col s6 m4">
             <div class="card">
                 <div class="card-content">
-                    <div class="card-title">
+                    <span class="card-title">
                         {{.Name}}
-                    </div>
+                    </span>
+                    <p>Preis: {{.Price | formatAsPrice}}</p>
                 </div>
                 <div class="card-action right-align">
                     <form action="/purchase/{{$.userId}}" method="post">

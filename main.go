@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,6 +28,9 @@ func main() {
 	db.AutoMigrate(&models.Purchase{})
 
 	router := gin.Default()
+	router.SetFuncMap(template.FuncMap{
+		"formatAsPrice": formatAsPrice,
+	})
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
 
@@ -119,4 +123,13 @@ func handlePurchase(c *gin.Context) {
 	purchaseDrink(uint(userId), uint(drinkId))
 
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
+}
+
+func formatAsPrice(cents int) string {
+	if cents%100 >= 10 {
+		return strconv.FormatInt(int64(cents/100), 10) + "," + strconv.FormatInt(int64(cents%100), 10) + "€"
+	} else {
+		return strconv.FormatInt(int64(cents/100), 10) + ",0" + strconv.FormatInt(int64(cents%100), 10) + "€"
+	}
+
 }
