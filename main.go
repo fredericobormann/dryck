@@ -31,6 +31,7 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", handleIndex)
+	router.POST("/new-user", handleNewUser)
 	router.GET("/user/:user_id", handleUserPage)
 	router.POST("/purchase/:user_id", handlePurchase)
 
@@ -41,6 +42,11 @@ func getAllUsers() []models.User {
 	var allUsers []models.User
 	db.Find(&allUsers)
 	return allUsers
+}
+
+func createNewUser(username string) {
+	newUser := models.User{Name: username}
+	db.Create(&newUser)
 }
 
 func getAllDrinks() []models.Drink {
@@ -73,6 +79,13 @@ func handleIndex(c *gin.Context) {
 			"users": getAllUsers(),
 		},
 	)
+}
+
+func handleNewUser(c *gin.Context) {
+	newUserName := c.PostForm("new-user-name")
+	createNewUser(newUserName)
+
+	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
 func handleUserPage(c *gin.Context) {

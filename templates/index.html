@@ -20,5 +20,25 @@
     {{end}}
 </div>
 
+<div class="fixed-action-btn">
+    <a href="#modal-new-user" class="waves-effect waves-light btn-large btn-floating modal-trigger teal darken-2">
+        <i class="material-icons">add</i>
+    </a>
+    <div id="modal-new-user" class="modal">
+        <form action="/new-user" method="post">
+            <div class="modal-content">
+                <h4>Neuen User erstellen</h4>
+                    <div class="input-field col s6">
+                        <input name="new-user-name" id="new_user_name" type="text">
+                        <label for="new_user_name">Name</label>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" name="action" class="modal-close waves-effect waves-green btn-flat">Erstellen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!--Embed the footer.html template at this location-->
 {{ template "footer.html" .}}
