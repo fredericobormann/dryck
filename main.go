@@ -69,7 +69,7 @@ func getAllDrinks() []models.Drink {
 
 func getPurchasesOfUser(userId uint) []models.Purchase {
 	var purchases []models.Purchase
-	db.Preload("Product").Where("customer_id = ?", userId).Find(&purchases)
+	db.Preload("Product").Where("customer_id = ?", userId).Order("purchase_time desc").Find(&purchases)
 	return purchases
 }
 
