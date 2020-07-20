@@ -44,46 +44,54 @@ func main() {
 	router.Run()
 }
 
+// Returns all users currently in the database
 func getAllUsers() []models.User {
 	var allUsers []models.User
 	db.Find(&allUsers)
 	return allUsers
 }
 
+// Returns the username for a given user id
 func getUsername(userId uint) string {
 	var user models.User
 	db.Where("id = ?", userId).First(&user)
 	return user.Name
 }
 
+// Creates a new user with given username
 func createNewUser(username string) {
 	newUser := models.User{Name: username}
 	db.Create(&newUser)
 }
 
+// Returns all drinks in the database
 func getAllDrinks() []models.Drink {
 	var allDrinks []models.Drink
 	db.Find(&allDrinks)
 	return allDrinks
 }
 
+// Return all purchases of one user specified by user id with drink information preloaded
 func getPurchasesOfUser(userId uint) []models.Purchase {
 	var purchases []models.Purchase
 	db.Preload("Product").Where("customer_id = ?", userId).Order("purchase_time desc").Find(&purchases)
 	return purchases
 }
 
+// Returns the total debt of one user specified by their user id
 func getTotalDebtOfUser(userId uint) int {
 	var totalDebt int
 	db.Table("purchases").Where("customer_id = ?", userId).Joins("inner join drinks on purchases.product_id = drinks.id").Select("sum(drinks.price)").Row().Scan(&totalDebt)
 	return totalDebt
 }
 
+// Adds a purchase for one user specified by their id and a drink also specified by id
 func purchaseDrink(userId uint, drinkId uint) {
 	purchase := models.Purchase{CustomerID: userId, ProductID: drinkId, PurchaseTime: time.Now()}
 	db.Create(&purchase)
 }
 
+// Handles requests to the index page
 func handleIndex(c *gin.Context) {
 	// Call the HTML method of the Context to render a template
 	c.HTML(
@@ -99,6 +107,7 @@ func handleIndex(c *gin.Context) {
 	)
 }
 
+// Handles creation of a new user
 func handleNewUser(c *gin.Context) {
 	newUserName := c.PostForm("new-user-name")
 	createNewUser(newUserName)
@@ -106,6 +115,7 @@ func handleNewUser(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
+// Handles user page with purchase history and the option to buy new drinks
 func handleUserPage(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	username := getUsername(uint(userId))
@@ -127,6 +137,7 @@ func handleUserPage(c *gin.Context) {
 	)
 }
 
+// Handles a new purchase
 func handlePurchase(c *gin.Context) {
 	drinkId, _ := strconv.ParseUint(c.PostForm("drink"), 10, 64)
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
@@ -135,6 +146,7 @@ func handlePurchase(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }
 
+// Formats a given cent amount to Eurostring
 func formatAsPrice(cents int) string {
 	if cents%100 >= 10 {
 		return strconv.FormatInt(int64(cents/100), 10) + "," + strconv.FormatInt(int64(cents%100), 10) + "€"
@@ -143,6 +155,7 @@ func formatAsPrice(cents int) string {
 	}
 }
 
+// Formats a timestamp so it's human readable
 func formatAsTime(t time.Time) string {
 	year, month, day := t.Date()
 	return fmt.Sprintf("%02d.%02d.%d", day, month, year)
