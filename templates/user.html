@@ -3,14 +3,27 @@
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
 
-<h1>Hello Gin!</h1>
+<h2>Hallo {{.username}}!</h2>
 
-<h1>Neues Getränk kaufen</h1>
-{{range .drinks}}
-    <form action="/purchase/{{$.userId}}" method="post">
-        <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">{{.Name}}</button>
-    </form>
-{{end}}
+<h4>Neues Getränk kaufen</h4>
+<div class="row">
+    {{range .drinks}}
+        <div class="col s6 m4">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">
+                        {{.Name}}
+                    </div>
+                </div>
+                <div class="card-action right-align">
+                    <form action="/purchase/{{$.userId}}" method="post">
+                        <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">Kaufen</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{end}}
+</div>
 
 {{range .purchases }}
     <h2>{{.Product.Name}}</h2>

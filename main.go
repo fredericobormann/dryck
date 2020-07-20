@@ -44,6 +44,12 @@ func getAllUsers() []models.User {
 	return allUsers
 }
 
+func getUsername(userId uint) string {
+	var user models.User
+	db.Where("id = ?", userId).First(&user)
+	return user.Name
+}
+
 func createNewUser(username string) {
 	newUser := models.User{Name: username}
 	db.Create(&newUser)
@@ -90,6 +96,7 @@ func handleNewUser(c *gin.Context) {
 
 func handleUserPage(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	username := getUsername(uint(userId))
 	purchases := getPurchasesOfUser(uint(userId))
 	drinks := getAllDrinks()
 
@@ -97,7 +104,8 @@ func handleUserPage(c *gin.Context) {
 		http.StatusOK,
 		"user.html",
 		gin.H{
-			"title":     "Users",
+			"title":     username,
+			"username":  username,
 			"userId":    userId,
 			"drinks":    drinks,
 			"purchases": purchases,
