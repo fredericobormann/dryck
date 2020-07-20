@@ -44,6 +44,7 @@ func main() {
 	router.POST("/delete-purchase/:user_id", handleDeletePurchase)
 
 	router.POST("/new-payment/:user_id", handlePayment)
+	router.POST("/delete-payment/:user_id", handleDeletePayment)
 
 	router.Run()
 }
@@ -106,6 +107,10 @@ func deletePurchase(purchaseId uint) {
 func addPayment(userId uint, amount int) {
 	payment := models.Payment{UserID: userId, Amount: amount, PaymentTime: time.Now()}
 	db.Create(&payment)
+}
+
+func deletePayment(paymentId uint) {
+	db.Where("id = ?", paymentId).Unscoped().Delete(&models.Payment{})
 }
 
 // Returns all payments of one user specified by id
@@ -186,6 +191,13 @@ func handlePayment(c *gin.Context) {
 	paymentAmount, _ := strconv.ParseInt(c.PostForm("payment_amount"), 10, 64)
 
 	addPayment(uint(userId), int(paymentAmount))
+	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
+}
+
+func handleDeletePayment(c *gin.Context) {
+	paymentId, _ := strconv.ParseUint(c.PostForm("delete_payment"), 10, 64)
+	deletePayment(uint(paymentId))
+
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }
 
