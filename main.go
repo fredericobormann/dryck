@@ -41,6 +41,7 @@ func main() {
 	router.POST("/new-user", handleNewUser)
 	router.GET("/user/:user_id", handleUserPage)
 	router.POST("/purchase/:user_id", handlePurchase)
+	router.POST("/delete-purchase/:user_id", handleDeletePurchase)
 
 	router.POST("/new-payment/:user_id", handlePayment)
 
@@ -94,6 +95,11 @@ func getTotalDebtOfUser(userId uint) int {
 func purchaseDrink(userId uint, drinkId uint) {
 	purchase := models.Purchase{CustomerID: userId, ProductID: drinkId, PurchaseTime: time.Now()}
 	db.Create(&purchase)
+}
+
+// Delete a purchase from database
+func deletePurchase(purchaseId uint) {
+	db.Where("id = ?", purchaseId).Unscoped().Delete(&models.Purchase{})
 }
 
 // Adds a payment for a user specified by id with a certain amount
@@ -166,6 +172,14 @@ func handlePurchase(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }
 
+// Handles the deletion of a purchase
+func handleDeletePurchase(c *gin.Context) {
+	purchaseId, _ := strconv.ParseUint(c.PostForm("delete_purchase"), 10, 64)
+	deletePurchase(uint(purchaseId))
+
+	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
+}
+
 // Handles a new payment
 func handlePayment(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
@@ -177,11 +191,20 @@ func handlePayment(c *gin.Context) {
 
 // Formats a given cent amount to Eurostring
 func formatAsPrice(cents int) string {
-	if cents%100 >= 10 {
-		return strconv.FormatInt(int64(cents/100), 10) + "," + strconv.FormatInt(int64(cents%100), 10) + "€"
-	} else {
-		return strconv.FormatInt(int64(cents/100), 10) + ",0" + strconv.FormatInt(int64(cents%100), 10) + "€"
+	result := ""
+	posCents := cents
+	if cents < 0 {
+		posCents = -cents
 	}
+	if posCents%100 >= 10 {
+		result = strconv.FormatInt(int64(posCents/100), 10) + "," + strconv.FormatInt(int64(posCents%100), 10) + "€"
+	} else {
+		result = strconv.FormatInt(int64(posCents/100), 10) + ",0" + strconv.FormatInt(int64(posCents%100), 10) + "€"
+	}
+	if cents < 0 {
+		return "-" + result
+	}
+	return result
 }
 
 // Formats a timestamp so it's human readable
