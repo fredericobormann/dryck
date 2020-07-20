@@ -1,0 +1,24 @@
+<table>
+    <thead>
+    <tr>
+        <th>
+            Datum
+        </th>
+        <th>
+            Betrag
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .payments}}
+        <tr>
+            <td>
+                {{.PaymentTime | formatAsTime}}
+            </td>
+            <td>
+                {{.Amount | formatAsPrice}}
+            </td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>

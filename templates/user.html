@@ -3,33 +3,48 @@
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
 
-<h2>Hallo {{.username}}!</h2>
+<div class="section">
+    <h2>Hallo {{.username}}!</h2>
 
-<h4>Aktueller Gesamtbetrag: {{.totalDebt | formatAsPrice}}</h4>
+    <h4>Aktueller Gesamtbetrag: {{.totalDebt | formatAsPrice}}</h4>
+</div>
 
 <div class="divider"></div>
-<h4>Neues Getränk kaufen</h4>
-<div class="row">
-    {{range .drinks}}
-        <div class="col s6 m4">
-            <div class="card">
-                <div class="card-content">
+
+<div class="section">
+    <h4>Neues Getränk kaufen</h4>
+    <div class="row">
+        {{range .drinks}}
+            <div class="col s6 m4">
+                <div class="card">
+                    <div class="card-content">
                     <span class="card-title">
                         {{.Name}}
                     </span>
-                    <p>Preis: {{.Price | formatAsPrice}}</p>
-                </div>
-                <div class="card-action right-align">
-                    <form action="/purchase/{{$.userId}}" method="post">
-                        <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">Kaufen</button>
-                    </form>
+                        <p>Preis: {{.Price | formatAsPrice}}</p>
+                    </div>
+                    <div class="card-action right-align">
+                        <form action="/purchase/{{$.userId}}" method="post">
+                            <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">Kaufen</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    {{end}}
+        {{end}}
+    </div>
 </div>
 
-{{ template "purchase-history.html" .}}
+<div class="divider"></div>
+
+<div class="section">
+    <h4>Einkaufshistorie</h4>
+    {{ template "purchase-history.html" .}}
+</div>
+
+<div class="section">
+    <h4>Zahlungshistorie</h4>
+    {{ template "payment-history.html" .}}
+</div>
 
 {{ template "new-payment.html" .}}
 

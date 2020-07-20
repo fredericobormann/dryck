@@ -102,6 +102,13 @@ func addPayment(userId uint, amount int) {
 	db.Create(&payment)
 }
 
+// Returns all payments of one user specified by id
+func getAllPaymentsOfUser(userId uint) []models.Payment {
+	var payments []models.Payment
+	db.Where("user_id = ?", userId).Find(&payments)
+	return payments
+}
+
 // Handles requests to the index page
 func handleIndex(c *gin.Context) {
 	// Call the HTML method of the Context to render a template
@@ -132,6 +139,7 @@ func handleUserPage(c *gin.Context) {
 	username := getUsername(uint(userId))
 	totalDebt := getTotalDebtOfUser(uint(userId))
 	purchases := getPurchasesOfUser(uint(userId))
+	payments := getAllPaymentsOfUser(uint(userId))
 	drinks := getAllDrinks()
 
 	c.HTML(
@@ -144,6 +152,7 @@ func handleUserPage(c *gin.Context) {
 			"totalDebt": totalDebt,
 			"drinks":    drinks,
 			"purchases": purchases,
+			"payments":  payments,
 		},
 	)
 }
