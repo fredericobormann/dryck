@@ -1,0 +1,19 @@
+<div class="fixed-action-btn">
+    <a href="#modal-new-payment" class="waves-effect waves-light btn-large btn-floating modal-trigger teal darken-2">
+        <i class="material-icons">add</i>
+    </a>
+    <div id="modal-new-payment" class="modal">
+        <form action="/new-payment/{{.userId}}" method="post">
+            <div class="modal-content">
+                <h4>Bezahlung</h4>
+                <div class="input-field col s6">
+                    <input name="payment_amount" id="payment_amount" type="text">
+                    <label for="payment_amount">Betrag</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" name="action" class="modal-close waves-effect waves-green btn-flat">Bestätigen</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -27,6 +27,7 @@ func main() {
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Drink{})
 	db.AutoMigrate(&models.Purchase{})
+	db.AutoMigrate(&models.Payment{})
 
 	router := gin.Default()
 	router.SetFuncMap(template.FuncMap{
@@ -40,6 +41,8 @@ func main() {
 	router.POST("/new-user", handleNewUser)
 	router.GET("/user/:user_id", handleUserPage)
 	router.POST("/purchase/:user_id", handlePurchase)
+
+	router.POST("/new-payment/:user_id", handlePayment)
 
 	router.Run()
 }
@@ -82,13 +85,21 @@ func getPurchasesOfUser(userId uint) []models.Purchase {
 func getTotalDebtOfUser(userId uint) int {
 	var totalDebt int
 	db.Table("purchases").Where("customer_id = ?", userId).Joins("inner join drinks on purchases.product_id = drinks.id").Select("sum(drinks.price)").Row().Scan(&totalDebt)
-	return totalDebt
+	var totalPayed int
+	db.Table("payments").Where("user_id = ?", userId).Select("sum(amount)").Row().Scan(&totalPayed)
+	return totalDebt - totalPayed
 }
 
 // Adds a purchase for one user specified by their id and a drink also specified by id
 func purchaseDrink(userId uint, drinkId uint) {
 	purchase := models.Purchase{CustomerID: userId, ProductID: drinkId, PurchaseTime: time.Now()}
 	db.Create(&purchase)
+}
+
+// Adds a payment for a user specified by id with a certain amount
+func addPayment(userId uint, amount int) {
+	payment := models.Payment{UserID: userId, Amount: amount, PaymentTime: time.Now()}
+	db.Create(&payment)
 }
 
 // Handles requests to the index page
@@ -143,6 +154,15 @@ func handlePurchase(c *gin.Context) {
 	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	purchaseDrink(uint(userId), uint(drinkId))
 
+	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
+}
+
+// Handles a new payment
+func handlePayment(c *gin.Context) {
+	userId, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	paymentAmount, _ := strconv.ParseInt(c.PostForm("payment_amount"), 10, 64)
+
+	addPayment(uint(userId), int(paymentAmount))
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }
 
