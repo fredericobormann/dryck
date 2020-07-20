@@ -1,14 +1,15 @@
 package main
 
 import (
-	"dryck/models"
 	"fmt"
+	"github.com/fredericobormann/dryck/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -17,7 +18,8 @@ var db *gorm.DB
 
 func main() {
 	var err error
-	db, err = gorm.Open("postgres", "host=localhost user=postgres dbname=postgres password=mysecretpassword sslmode=disable")
+	databasePassword := os.Getenv("POSTGRES_PASSWORD")
+	db, err = gorm.Open("postgres", "host=postgres user=postgres dbname=postgres password="+databasePassword+" sslmode=disable")
 	if err != nil {
 		log.Panic(err)
 	}

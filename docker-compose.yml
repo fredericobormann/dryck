@@ -1,0 +1,24 @@
+version: '2.0'
+services:
+  web:
+    build: .
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      GIN_MODE: release
+    ports:
+      - "8089:8080"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
+    driver: local
