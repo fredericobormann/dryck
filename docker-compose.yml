@@ -6,6 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mysecretpassword
       GIN_MODE: release
+      HTTP_PASSWORD: mysecretpassword
     ports:
       - "8089:8080"
     depends_on:
