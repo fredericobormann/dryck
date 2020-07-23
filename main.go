@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/fredericobormann/dryck/db"
+	"github.com/fredericobormann/dryck/format"
 	"github.com/fredericobormann/dryck/handler"
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"html/template"
 	"os"
-	"strconv"
-	"time"
 )
 
 var dryckdb *db.DB
@@ -24,8 +22,8 @@ func main() {
 
 	router := gin.Default()
 	router.SetFuncMap(template.FuncMap{
-		"formatAsPrice": formatAsPrice,
-		"formatAsTime":  formatAsTime,
+		"formatAsPrice": format.FormatAsPrice,
+		"formatAsTime":  format.FormatAsTime,
 	})
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
@@ -40,28 +38,4 @@ func main() {
 	router.POST("/delete-payment/:user_id", dryckhandler.HandleDeletePayment)
 
 	router.Run()
-}
-
-// Formats a given cent amount to Eurostring
-func formatAsPrice(cents int) string {
-	result := ""
-	posCents := cents
-	if cents < 0 {
-		posCents = -cents
-	}
-	if posCents%100 >= 10 {
-		result = strconv.FormatInt(int64(posCents/100), 10) + "," + strconv.FormatInt(int64(posCents%100), 10) + "€"
-	} else {
-		result = strconv.FormatInt(int64(posCents/100), 10) + ",0" + strconv.FormatInt(int64(posCents%100), 10) + "€"
-	}
-	if cents < 0 {
-		return "-" + result
-	}
-	return result
-}
-
-// Formats a timestamp so it's human readable
-func formatAsTime(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%02d.%02d.%d", day, month, year)
 }
