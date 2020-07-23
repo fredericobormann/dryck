@@ -10,11 +10,9 @@ import (
 	"os"
 )
 
-var dryckdb *db.DB
-
 func main() {
 	databasePassword := os.Getenv("POSTGRES_PASSWORD")
-	dryckdb = db.New("postgres", "host=postgres user=postgres dbname=postgres password="+databasePassword+" sslmode=disable")
+	dryckdb := db.New("postgres", "host=postgres user=postgres dbname=postgres password="+databasePassword+" sslmode=disable")
 
 	defer dryckdb.Close()
 
