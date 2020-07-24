@@ -1,5 +1,6 @@
 # dryck
 [![Build Status](https://travis-ci.com/fredericobormann/dryck.svg?branch=master)](https://travis-ci.com/fredericobormann/dryck)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fredericobormann/dryck)](https://goreportcard.com/report/github.com/fredericobormann/dryck)
 
 dryck is a very simple web app written in Go using Gin to keep track of the amount of drinks taken by different people in a shared space.
 At the moment it doesn't support user authentication, so you should trust everyone who has access to it.
