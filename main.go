@@ -20,8 +20,8 @@ func main() {
 
 	router := gin.Default()
 	router.SetFuncMap(template.FuncMap{
-		"formatAsPrice": format.FormatAsPrice,
-		"formatAsTime":  format.FormatAsTime,
+		"formatAsPrice": format.AsPrice,
+		"formatAsTime":  format.AsTime,
 	})
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
