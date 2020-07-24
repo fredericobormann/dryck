@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Purchase stores information about one purchase
 type Purchase struct {
 	gorm.Model
 	Customer     User

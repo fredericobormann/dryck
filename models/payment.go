@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Payment stores information about one payment
 type Payment struct {
 	gorm.Model
 	User        User
