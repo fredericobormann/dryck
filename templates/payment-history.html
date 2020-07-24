@@ -20,7 +20,7 @@
                 {{.Amount | formatAsPrice}}
             </td>
             <td>
-                <form action="/delete-payment/{{$.userId}}" method="post">
+                <form action="/delete-payment/{{$.userID}}" method="post">
                     <button class="btn waves-effect waves-light red" name="delete_payment" value="{{.Model.ID}}">
                         <i class="material-icons">delete</i>
                     </button>

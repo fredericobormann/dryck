@@ -26,7 +26,7 @@
                     {{.Product.Price | formatAsPrice}}
                 </td>
                 <td>
-                    <form action="/delete-purchase/{{$.userId}}" method="post">
+                    <form action="/delete-purchase/{{$.userID}}" method="post">
                         <button class="btn waves-effect waves-light red" name="delete_purchase" value="{{.Model.ID}}">
                             <i class="material-icons">delete</i>
                         </button>

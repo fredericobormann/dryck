@@ -24,7 +24,7 @@
                         <p>Preis: {{.Price | formatAsPrice}}</p>
                     </div>
                     <div class="card-action right-align">
-                        <form action="/purchase/{{$.userId}}" method="post">
+                        <form action="/purchase/{{$.userID}}" method="post">
                             <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">Kaufen</button>
                         </form>
                     </div>
