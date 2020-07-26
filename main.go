@@ -11,8 +11,11 @@ import (
 )
 
 func main() {
+	databaseHost := os.Getenv("POSTGRES_HOST")
+	databaseUser := os.Getenv("POSTGRES_USER")
 	databasePassword := os.Getenv("POSTGRES_PASSWORD")
-	dryckdb := db.New("postgres", "host=postgres user=postgres dbname=postgres password="+databasePassword+" sslmode=disable")
+	databaseName := os.Getenv("POSTGRES_DATABASE")
+	dryckdb := db.New("postgres", "host="+databaseHost+" user="+databaseUser+" dbname="+databaseName+" password="+databasePassword+" sslmode=disable")
 	httpPassword, httpBasicAuthActive := os.LookupEnv("HTTP_PASSWORD")
 
 	defer dryckdb.Close()

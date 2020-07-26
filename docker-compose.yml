@@ -4,7 +4,10 @@ services:
     build: .
     restart: always
     environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DATABASE: postgres
       GIN_MODE: release
       HTTP_PASSWORD: mysecretpassword
     ports:
