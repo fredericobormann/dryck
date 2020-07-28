@@ -23,6 +23,9 @@ func New(dbType string, dbConnInfo string) *DB {
 	db.AutoMigrate(&models.Drink{})
 	db.AutoMigrate(&models.Purchase{})
 	db.AutoMigrate(&models.Payment{})
+	db.Model(&models.Purchase{}).AddForeignKey("customer_id", "users(id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.Purchase{}).AddForeignKey("product_id", "drinks(id)", "RESTRICT", "RESTRICT")
+	db.Model(&models.Payment{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 
 	dryckdb := DB{
 		db,
