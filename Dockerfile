@@ -16,6 +16,14 @@ COPY . .
 # Build the Go app
 RUN go build main.go
 
+FROM alpine as final
+
+WORKDIR /app/dryck
+
+COPY --from=build_base /tmp/dryck/main .
+COPY --from=build_base /tmp/dryck/static ./static
+COPY --from=build_base /tmp/dryck/templates ./templates
+
 # This container exposes port 8080 to the outside world
 EXPOSE 8080
 
