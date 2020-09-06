@@ -100,3 +100,12 @@ func (h *Handler) HandleDeletePayment(c *gin.Context) {
 
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
 }
+
+// HandleLoginPage handles the login page
+func (h *Handler) HandleLoginPage(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"login.html",
+		gin.H{},
+	)
+}

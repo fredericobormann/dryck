@@ -14,13 +14,18 @@ import (
 	"time"
 )
 
+type login struct {
+	Username string `form:"username" json:"username" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
+
 func main() {
 	databaseHost := os.Getenv("POSTGRES_HOST")
 	databaseUser := os.Getenv("POSTGRES_USER")
 	databasePassword := os.Getenv("POSTGRES_PASSWORD")
 	databaseName := os.Getenv("POSTGRES_DATABASE")
 	dryckdb := db.New("postgres", "host="+databaseHost+" user="+databaseUser+" dbname="+databaseName+" password="+databasePassword+" sslmode=disable")
-	httpPassword, httpBasicAuthActive := os.LookupEnv("HTTP_PASSWORD")
+	_, httpBasicAuthActive := os.LookupEnv("HTTP_PASSWORD")
 	jwtSecret, jwtSecretDefined := os.LookupEnv("JWT_SECRET")
 
 	defer dryckdb.Close()
@@ -45,9 +50,8 @@ func main() {
 		if jwtErr != nil {
 			log.Fatal(jwtErr)
 		}
-		router.GET("/login", gin.BasicAuth(gin.Accounts{
-			"dryck": httpPassword,
-		}), jwtMiddleware.LoginHandler)
+		router.GET("/login", dryckhandler.HandleLoginPage)
+		router.POST("/login", jwtMiddleware.LoginHandler)
 
 		authorized = router.Group("/", jwtMiddleware.MiddlewareFunc())
 	} else {
@@ -85,7 +89,18 @@ func createJWTMiddleware(jwtSecret string) (authMiddleware *jwt.GinJWTMiddleware
 			return claims["id"].(string) == "0"
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			return true, nil
+			var loginVals login
+			if err := c.ShouldBind(&loginVals); err != nil {
+				return "", jwt.ErrMissingLoginValues
+			}
+
+			httpPassword, _ := os.LookupEnv("HTTP_PASSWORD")
+
+			if loginVals.Username == "dryck" && loginVals.Password == httpPassword {
+				return true, nil
+			}
+
+			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if v, ok := data.(bool); ok && v {
@@ -95,10 +110,10 @@ func createJWTMiddleware(jwtSecret string) (authMiddleware *jwt.GinJWTMiddleware
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.Redirect(http.StatusMovedPermanently, "/login")
+			c.Redirect(http.StatusFound, "/login")
 		},
 		LoginResponse: func(c *gin.Context, i int, s string, t time.Time) {
-			c.Redirect(http.StatusMovedPermanently, "/")
+			c.Redirect(http.StatusFound, "/")
 		},
 		TokenLookup:    "header: Authorization, query: token, cookie: jwt",
 		CookieSameSite: http.SameSiteStrictMode,

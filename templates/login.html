@@ -1,0 +1,22 @@
+{{ template "header.html" .}}
+<div class="col s12 m6">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Login</span>
+            <form action="/login" method="post">
+                <div class="input-field col s6">
+                    <input name="username" id="username" type="text">
+                    <label for="username">Username</label>
+                </div>
+                <div class="input-field col s6">
+                    <input name="password" id="password" type="password">
+                    <label for="password">Password</label>
+                </div>
+                <div class="right-align">
+                    <button type="submit" name="action" class="waves-effect waves-green btn btn-primary">Bestätigen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{ template "footer.html" .}}
