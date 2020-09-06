@@ -8,7 +8,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DATABASE: postgres
-      GIN_MODE: release
       HTTP_PASSWORD: mysecretpassword
       JWT_SECRET: changethisinproduction
     ports:
