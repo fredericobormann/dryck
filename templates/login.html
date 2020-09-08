@@ -2,6 +2,9 @@
 <div class="col s12 m6">
     <div class="card">
         <div class="card-content">
+            {{ if .hasMessage }}
+                <div class="card-panel red accent-1"> {{ .message }}</div>
+            {{ end }}
             <span class="card-title">Login</span>
             <form action="/login" method="post">
                 <div class="input-field col s6">
@@ -13,7 +16,7 @@
                     <label for="password">Password</label>
                 </div>
                 <div class="right-align">
-                    <button type="submit" name="action" class="waves-effect waves-green btn btn-primary">Bestätigen</button>
+                    <button type="submit" name="action" class="waves-effect btn btn-primary">Bestätigen</button>
                 </div>
             </form>
         </div>

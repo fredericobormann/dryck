@@ -103,9 +103,13 @@ func (h *Handler) HandleDeletePayment(c *gin.Context) {
 
 // HandleLoginPage handles the login page
 func (h *Handler) HandleLoginPage(c *gin.Context) {
+	message := c.Query("message")
 	c.HTML(
 		http.StatusOK,
 		"login.html",
-		gin.H{},
+		gin.H{
+			"hasMessage": message != "",
+			"message":    message,
+		},
 	)
 }

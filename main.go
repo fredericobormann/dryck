@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/fredericobormann/dryck/db"
 	"github.com/fredericobormann/dryck/format"
@@ -110,7 +111,11 @@ func createJWTMiddleware(jwtSecret string) (authMiddleware *jwt.GinJWTMiddleware
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.Redirect(http.StatusFound, "/login")
+			if message == "cookie token is empty" {
+				c.Redirect(http.StatusFound, "/login")
+			} else {
+				c.Redirect(http.StatusFound, fmt.Sprintf("/login?message=%s", message))
+			}
 		},
 		LoginResponse: func(c *gin.Context, i int, s string, t time.Time) {
 			c.Redirect(http.StatusFound, "/")
