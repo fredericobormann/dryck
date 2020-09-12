@@ -36,3 +36,8 @@
         {{end}}
     </tbody>
 </table>
+<ul class="pagination center-align">
+    {{ range .purchasePaginator }}
+        <li class="{{.Class}}"><a href="{{.Href}}">{{.Page}}</a></li>
+    {{ end }}
+</ul>

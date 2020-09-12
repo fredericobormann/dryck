@@ -76,6 +76,21 @@ func (db *DB) GetPurchasesOfUser(userID uint) []models.Purchase {
 	return purchases
 }
 
+// GetPaginatedPurchasesOfUser returns purchases for a given user on a specific page (beginning with 1) with given numberOfItems on each page
+func (db *DB) GetPaginatedPurchasesOfUser(userID uint, itemsPerPage int, page int) []models.Purchase {
+	var purchases []models.Purchase
+	offset := (page - 1) * itemsPerPage
+	db.Datastore.Limit(itemsPerPage).Offset(offset).Preload("Product").Where("customer_id = ?", userID).Order("purchase_time desc").Find(&purchases)
+	return purchases
+}
+
+// GetNumberOfPurchasesOfUser returns the number of purchases by a given user
+func (db *DB) GetNumberOfPurchasesOfUser(userID uint) int {
+	var count int64
+	db.Datastore.Model(&models.Purchase{}).Preload("Product").Where("customer_id = ?", userID).Order("purchase_time desc").Count(&count)
+	return int(count)
+}
+
 // GetTotalDebtOfUser returns the total debt of one user specified by their user id
 func (db *DB) GetTotalDebtOfUser(userID uint) int {
 	var totalDebt int

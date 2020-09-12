@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/fredericobormann/dryck/db"
 	"github.com/gin-gonic/gin"
+	"math"
 	"net/http"
 	"strconv"
 )
@@ -45,10 +46,28 @@ func (h *Handler) HandleNewUser(c *gin.Context) {
 
 // HandleUserPage handles user page with purchase history and the option to buy new drinks
 func (h *Handler) HandleUserPage(c *gin.Context) {
+	itemsPerPurchasePage := 10
+	var purchasePaginator []Pagebutton
 	userID, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
+
+	numberOfPurchases := h.Datastore.GetNumberOfPurchasesOfUser(uint(userID))
+	numberOfPurchasePages := 1
+	if numberOfPurchases > 0 {
+		numberOfPurchasePages = int(math.Ceil(float64(numberOfPurchases) / float64(itemsPerPurchasePage)))
+	}
+
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil || int(page) > numberOfPurchasePages || int(page) < 1 {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	if numberOfPurchases > itemsPerPurchasePage {
+		purchasePaginator = newPagebuttons(int(page), numberOfPurchasePages)
+	}
+
 	username := h.Datastore.GetUsername(uint(userID))
 	totalDebt := h.Datastore.GetTotalDebtOfUser(uint(userID))
-	purchases := h.Datastore.GetPurchasesOfUser(uint(userID))
+	purchases := h.Datastore.GetPaginatedPurchasesOfUser(uint(userID), itemsPerPurchasePage, int(page))
 	payments := h.Datastore.GetAllPaymentsOfUser(uint(userID))
 	drinks := h.Datastore.GetAllDrinks()
 
@@ -56,13 +75,14 @@ func (h *Handler) HandleUserPage(c *gin.Context) {
 		http.StatusOK,
 		"user.html",
 		gin.H{
-			"title":     username,
-			"username":  username,
-			"userID":    userID,
-			"totalDebt": totalDebt,
-			"drinks":    drinks,
-			"purchases": purchases,
-			"payments":  payments,
+			"title":             username,
+			"username":          username,
+			"userID":            userID,
+			"totalDebt":         totalDebt,
+			"drinks":            drinks,
+			"purchases":         purchases,
+			"purchasePaginator": purchasePaginator,
+			"payments":          payments,
 		},
 	)
 }
