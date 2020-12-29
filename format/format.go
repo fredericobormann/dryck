@@ -1,8 +1,11 @@
 package format
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -25,8 +28,23 @@ func AsPrice(cents int) string {
 }
 
 func FromPrice(price string) (int, error) {
-	cents, err := strconv.ParseInt(price, 10, 64)
-	return int(cents), err
+	re := regexp.MustCompile(`^(\d)+(,(\d){2})?$`)
+	if !re.MatchString(price) {
+		return 0, errors.New("price has not got the right format")
+	}
+
+	splittedPrice := strings.Split(price, ",")
+	euros, euroErr := strconv.ParseInt(splittedPrice[0], 10, 64)
+	var cents int64
+	var centsErr error
+	if len(splittedPrice) > 1 {
+		cents, centsErr = strconv.ParseInt(splittedPrice[1], 10, 64)
+	}
+
+	if euroErr != nil || centsErr != nil {
+		return 0, errors.New("parsing price failed")
+	}
+	return int(100*euros + cents), nil
 }
 
 // AsTime formats a timestamp so it's human readable
