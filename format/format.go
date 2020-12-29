@@ -27,6 +27,7 @@ func AsPrice(cents int) string {
 	return result
 }
 
+// FromPrice takes a price string (e. g. 42,10) and return the cent value (e. g. 4210)
 func FromPrice(price string) (int, error) {
 	re := regexp.MustCompile(`^(\d)+(,(\d){2})?$`)
 	if !re.MatchString(price) {
