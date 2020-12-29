@@ -19,3 +19,13 @@ func TestFormatAsPrice(t *testing.T) {
 		t.Errorf("format.AsPrice() returned %q, wanted %q", got, want)
 	}
 }
+
+func TestFromPrice(t *testing.T) {
+	want := 4210
+	if got, _ := FromPrice("42,10"); got != want {
+		t.Errorf("format.FromPrice() returned %d, wanted %d", got, want)
+	}
+	if _, err := FromPrice("1,5"); err == nil {
+		t.Errorf("format.FromPrice() returned no error when %q was given as argument.", "1,5")
+	}
+}
