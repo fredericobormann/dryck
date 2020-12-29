@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/fredericobormann/dryck/db"
+	"github.com/fredericobormann/dryck/format"
 	"github.com/gin-gonic/gin"
 	"math"
 	"net/http"
@@ -50,6 +52,13 @@ func (h *Handler) HandleUserPage(c *gin.Context) {
 	var purchasePaginator []Pagebutton
 	userID, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
 
+	errorMessage := ""
+	if errorType := c.Query("error"); errorType != "" {
+		if errorType == "wrong_format" {
+			errorMessage = "Der Betrag wurde nicht im richtigen Format eingegeben. Bitte verwende \"1,50\" um eine Zahlung von 1,50€ einzutragen."
+		}
+	}
+
 	numberOfPurchases := h.Datastore.GetNumberOfPurchasesOfUser(uint(userID))
 	numberOfPurchasePages := 1
 	if numberOfPurchases > 0 {
@@ -83,6 +92,7 @@ func (h *Handler) HandleUserPage(c *gin.Context) {
 			"purchases":         purchases,
 			"purchasePaginator": purchasePaginator,
 			"payments":          payments,
+			"errorMessage":      errorMessage,
 		},
 	)
 }
@@ -107,7 +117,12 @@ func (h *Handler) HandleDeletePurchase(c *gin.Context) {
 // HandlePayment handles a new payment
 func (h *Handler) HandlePayment(c *gin.Context) {
 	userID, _ := strconv.ParseUint(c.Param("user_id"), 10, 64)
-	paymentAmount, _ := strconv.ParseInt(c.PostForm("payment_amount"), 10, 64)
+	paymentAmount, err := format.FromPrice(c.PostForm("payment_amount"))
+
+	if err != nil {
+		c.Redirect(http.StatusMovedPermanently, fmt.Sprintf("/user/%d?error=wrong_format", userID))
+		return
+	}
 
 	h.Datastore.AddPayment(uint(userID), int(paymentAmount))
 	c.Redirect(http.StatusMovedPermanently, "/user/"+c.Param("user_id"))
