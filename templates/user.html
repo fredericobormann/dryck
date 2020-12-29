@@ -4,6 +4,15 @@
 {{ template "header.html" .}}
 
 <div class="section">
+    {{ if ne .errorMessage "" }}
+    <div class="card red lighten-2">
+        <div class="card-content white-text">
+            <span class="card-title">Fehler</span>
+            <p>{{ .errorMessage }}</p>
+        </div>
+    </div>
+    {{ end }}
+
     <h2>Hallo {{.username}}!</h2>
 
     <h4>Aktueller Gesamtbetrag: {{.totalDebt | formatAsPrice}}</h4>

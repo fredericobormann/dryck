@@ -24,6 +24,11 @@ func AsPrice(cents int) string {
 	return result
 }
 
+func FromPrice(price string) (int, error) {
+	cents, err := strconv.ParseInt(price, 10, 64)
+	return int(cents), err
+}
+
 // AsTime formats a timestamp so it's human readable
 func AsTime(t time.Time) string {
 	year, month, day := t.Date()
