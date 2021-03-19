@@ -54,7 +54,7 @@ func main() {
 		router.GET("/login", dryckhandler.HandleLoginPage)
 		router.POST("/login", jwtMiddleware.LoginHandler)
 
-		authorized = router.Group("/", jwtMiddleware.MiddlewareFunc())
+		authorized = router.Group("/", jwtMiddleware.MiddlewareFunc(), jwtMiddleware.RefreshHandler)
 	} else {
 		authorized = router.Group("/")
 	}
@@ -76,6 +76,7 @@ func createJWTMiddleware(jwtSecret string) (authMiddleware *jwt.GinJWTMiddleware
 		Realm:       "authenticated zone",
 		Key:         []byte(jwtSecret),
 		Timeout:     30 * 24 * time.Hour,
+		MaxRefresh:  30 * 24 * time.Hour,
 		IdentityKey: "id",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if _, ok := data.(bool); ok {
@@ -119,6 +120,9 @@ func createJWTMiddleware(jwtSecret string) (authMiddleware *jwt.GinJWTMiddleware
 		},
 		LoginResponse: func(c *gin.Context, i int, s string, t time.Time) {
 			c.Redirect(http.StatusFound, "/")
+		},
+		RefreshResponse: func(c *gin.Context, code int, message string, i time.Time) {
+			c.Next()
 		},
 		TokenLookup:    "header: Authorization, query: token, cookie: jwt",
 		CookieSameSite: http.SameSiteStrictMode,
