@@ -6,8 +6,11 @@ import (
 	"github.com/fredericobormann/dryck/db"
 	"github.com/fredericobormann/dryck/format"
 	"github.com/fredericobormann/dryck/handler"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/utrack/gin-csrf"
 	"html/template"
 	"log"
 	"net/http"
@@ -40,6 +43,16 @@ func main() {
 	})
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
+
+	store := cookie.NewStore([]byte(jwtSecret))
+	router.Use(sessions.Sessions("drycksession", store))
+	router.Use(csrf.Middleware(csrf.Options{
+		Secret: jwtSecret,
+		ErrorFunc: func(c *gin.Context) {
+			c.String(400, "CSRF token mismatch")
+			c.Abort()
+		},
+	}))
 
 	var authorized *gin.RouterGroup
 

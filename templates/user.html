@@ -34,6 +34,7 @@
                     </div>
                     <div class="card-action right-align">
                         <form action="/purchase/{{$.userID}}" method="post">
+                            <input type="hidden" name="_csrf" value="{{ $.csrftoken }}" />
                             <button class="btn btn-primary" type="submit" name="drink" value="{{.Model.ID}}">Kaufen</button>
                         </form>
                     </div>

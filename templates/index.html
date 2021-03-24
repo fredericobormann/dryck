@@ -26,6 +26,7 @@
     </a>
     <div id="modal-new-user" class="modal">
         <form action="/new-user" method="post">
+            <input type="hidden" name="_csrf" value="{{ .csrftoken }}" />
             <div class="modal-content">
                 <h4>Neuen User erstellen</h4>
                     <div class="input-field col s6">

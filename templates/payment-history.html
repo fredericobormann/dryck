@@ -21,6 +21,7 @@
             </td>
             <td>
                 <form action="/delete-payment/{{$.userID}}" method="post">
+                    <input type="hidden" name="_csrf" value="{{ $.csrftoken }}" />
                     <button class="btn waves-effect waves-light red" name="delete_payment" value="{{.Model.ID}}">
                         <i class="material-icons">delete</i>
                     </button>

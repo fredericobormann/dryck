@@ -4,6 +4,7 @@
     </a>
     <div id="modal-new-payment" class="modal">
         <form action="/new-payment/{{.userID}}" method="post">
+            <input type="hidden" name="_csrf" value="{{ .csrftoken }}" />
             <div class="modal-content">
                 <h4>Bezahlung</h4>
                 <p>Gib den bezahlten Betrag in folgendem Format ein: 42,10</p>

@@ -5,6 +5,7 @@ import (
 	"github.com/fredericobormann/dryck/db"
 	"github.com/fredericobormann/dryck/format"
 	"github.com/gin-gonic/gin"
+	"github.com/utrack/gin-csrf"
 	"math"
 	"net/http"
 	"strconv"
@@ -32,8 +33,9 @@ func (h *Handler) HandleIndex(c *gin.Context) {
 		"index.html",
 		// Pass the data that the page uses (in this case, 'title')
 		gin.H{
-			"title": "Home Page",
-			"users": h.Datastore.GetAllUsers(),
+			"csrftoken": csrf.GetToken(c),
+			"title":     "Home Page",
+			"users":     h.Datastore.GetAllUsers(),
 		},
 	)
 }
@@ -84,6 +86,7 @@ func (h *Handler) HandleUserPage(c *gin.Context) {
 		http.StatusOK,
 		"user.html",
 		gin.H{
+			"csrftoken":         csrf.GetToken(c),
 			"title":             username,
 			"username":          username,
 			"userID":            userID,
@@ -143,6 +146,7 @@ func (h *Handler) HandleLoginPage(c *gin.Context) {
 		http.StatusOK,
 		"login.html",
 		gin.H{
+			"csrftoken":  csrf.GetToken(c),
 			"hasMessage": message != "",
 			"message":    message,
 		},
