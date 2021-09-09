@@ -23,7 +23,7 @@
                     {{.Product.Name}}
                 </td>
                 <td>
-                    {{.Product.Price | formatAsPrice}}
+                    {{.Price | formatAsPrice}}
                 </td>
                 <td class="center-align">
                     <form action="/delete-purchase/{{$.userID}}" method="post">
