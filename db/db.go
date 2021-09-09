@@ -27,6 +27,13 @@ func New(dbType string, dbConnInfo string) *DB {
 	db.Model(&models.Purchase{}).AddForeignKey("product_id", "drinks(id)", "RESTRICT", "RESTRICT")
 	db.Model(&models.Payment{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 
+	db.Exec("UPDATE purchases " +
+		"SET price = drinks.price " +
+		"FROM drinks " +
+		"WHERE purchases.product_id = drinks.id " +
+		"AND (purchases.price = 0 " +
+		"OR purchases.price IS NULL);")
+
 	dryckdb := DB{
 		db,
 	}
@@ -94,7 +101,7 @@ func (db *DB) GetNumberOfPurchasesOfUser(userID uint) int {
 // GetTotalDebtOfUser returns the total debt of one user specified by their user id
 func (db *DB) GetTotalDebtOfUser(userID uint) int {
 	var totalDebt int
-	db.Datastore.Table("purchases").Where("customer_id = ?", userID).Joins("inner join drinks on purchases.product_id = drinks.id").Select("sum(drinks.price)").Row().Scan(&totalDebt)
+	db.Datastore.Table("purchases").Where("customer_id = ?", userID).Select("sum(price)").Row().Scan(&totalDebt)
 	var totalPayed int
 	db.Datastore.Table("payments").Where("user_id = ?", userID).Select("sum(amount)").Row().Scan(&totalPayed)
 	return totalDebt - totalPayed
@@ -102,7 +109,9 @@ func (db *DB) GetTotalDebtOfUser(userID uint) int {
 
 // PurchaseDrink adds a purchase for one user specified by their id and a drink also specified by id
 func (db *DB) PurchaseDrink(userID uint, drinkID uint) {
-	purchase := models.Purchase{CustomerID: userID, ProductID: drinkID, PurchaseTime: time.Now()}
+	var drink models.Drink
+	db.Datastore.Where("id = ?", drinkID).First(&drink)
+	purchase := models.Purchase{CustomerID: userID, ProductID: drinkID, PurchaseTime: time.Now(), Price: drink.Price}
 	db.Datastore.Create(&purchase)
 }
 

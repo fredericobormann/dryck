@@ -13,4 +13,5 @@ type Purchase struct {
 	Product      Drink
 	ProductID    uint
 	PurchaseTime time.Time
+	Price        int
 }
