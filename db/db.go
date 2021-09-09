@@ -27,6 +27,13 @@ func New(dbType string, dbConnInfo string) *DB {
 	db.Model(&models.Purchase{}).AddForeignKey("product_id", "drinks(id)", "RESTRICT", "RESTRICT")
 	db.Model(&models.Payment{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 
+	db.Exec("UPDATE purchases " +
+		"SET price = drinks.price " +
+		"FROM drinks " +
+		"WHERE purchases.product_id = drinks.id " +
+		"AND (purchases.price = 0 " +
+		"OR purchases.price IS NULL);")
+
 	dryckdb := DB{
 		db,
 	}
